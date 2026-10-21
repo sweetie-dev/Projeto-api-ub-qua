@@ -5,31 +5,29 @@ from pydantic import BaseModel, Field
 app = FastAPI(title="API Biblioteca de Bairro")
 
 
-# Modelo de dados de um livro
+#modelo de como os dados de um livro irão aparecer
 class Livro(BaseModel):
     titulo: str = Field(min_length=1)
     autor: str = Field(min_length=1)
     isbn: str = Field(min_length=1)
     quantidade: int = Field(ge=0)
 
-
-# Modelo de resposta, incluindo o ID
 class LivroComId(Livro):
     id: int
 
 
-# Lista que guarda os livros na memoria
+#a lista que guarda os livros
 livros: list[LivroComId] = []
 proximo_id = 1
 
 
-# GET - Listar todos os livros
+#metodo get que lista os livros
 @app.get("/livros", response_model=list[LivroComId])
 def listar_livros():
     return livros
 
 
-# GET - Buscar um livro pelo ID
+#metodo get busca os livros pelo Id
 @app.get("/livros/{livro_id}", response_model=LivroComId)
 def buscar_livro(livro_id: int):
     for livro in livros:
@@ -42,7 +40,7 @@ def buscar_livro(livro_id: int):
     )
 
 
-# POST - Cadastrar um livro
+#metodo post postar um livro novo
 @app.post(
     "/livros",
     response_model=LivroComId,
@@ -62,7 +60,7 @@ def cadastrar_livro(livro: Livro):
     return novo_livro
 
 
-# PUT - Alterar um livro
+#metodo put atualizar/ alterar informações em um livro
 @app.put("/livros/{livro_id}", response_model=LivroComId)
 def alterar_livro(livro_id: int, dados: Livro):
     for indice, livro in enumerate(livros):
@@ -81,7 +79,7 @@ def alterar_livro(livro_id: int, dados: Livro):
     )
 
 
-# DELETE - Apagar um livro
+#metodo delete para apagar um livro
 @app.delete(
     "/livros/{livro_id}",
     status_code=status.HTTP_204_NO_CONTENT
